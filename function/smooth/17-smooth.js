@@ -10,17 +10,21 @@ module.exports = function(RED) {
         this.count = Number(n.count);
         var node = this;
         var a = [];
+        var a_sorted = [];
         var tot = 0;
         var tot2 = 0;
         var pop = 0;
+        var popped = false;
         var old = null;
 
         this.on('input', function (msg) {
             if (msg.hasOwnProperty("reset")) {
                 a = [];
+                a_sorted = [];
                 tot = 0;
                 tot2 = 0;
                 pop = 0;
+                popped = false;
                 old = null;
             }
             if (msg.hasOwnProperty("payload")) {
@@ -34,7 +38,11 @@ module.exports = function(RED) {
                     }
                     else {
                         a.push(n);
-                        if (a.length > node.count) { pop = a.shift(); }
+                        if (a.length > node.count) {
+                            pop = a.shift();
+                            popped = true;
+                        }
+                        else { popped = false; }
                         if (node.action === "max") {
                             msg.payload = Math.max.apply(Math, a);
                         }
@@ -44,6 +52,29 @@ module.exports = function(RED) {
                         if (node.action === "mean") {
                             tot = tot + n - pop;
                             msg.payload = tot / a.length;
+                        }
+                        if (node.action === "median") {
+                            if (popped) {
+                                // delete outgoing value from sorted array
+                                var pop_idx = a_sorted.indexOf(pop);
+                                a_sorted.splice(pop_idx, 1);
+                            }
+
+                            // insert incoming value into sorted array
+                            var a_idx = a_sorted.findIndex(function (element, index, array) {
+                                return (n < element);
+                            });
+                            if (a_idx >= 0) {
+                                a_sorted.splice(a_idx, 0, n)
+                            }
+                            else { a_sorted.push(n); }
+
+                            if (a_sorted.length % 2 == 0) {
+                                var hi_mid = a_sorted[a_sorted.length / 2];
+                                var low_mid = a_sorted[(a_sorted.length / 2) - 1];
+                                msg.payload = (low_mid + hi_mid) / 2;
+                            }
+                            else { msg.payload = a_sorted[Math.floor(a_sorted.length / 2)]; }
                         }
                         if (node.action === "sd") {
                             tot = tot + n - pop;
