@@ -45,6 +45,18 @@ module.exports = function(RED) {
                             tot = tot + n - pop;
                             msg.payload = tot / a.length;
                         }
+                        if (node.action === "median") {
+                            var a_copy = a.slice();
+                            a_copy.sort(function (a, b) { return (a - b) });
+                            if (a_copy.length % 2 == 0) {
+                                // average the middle 2 values
+                                var mid_1 = a_copy[(a_copy.length / 2) - 1];
+                                var mid_2 = a_copy[a_copy.length / 2];
+                                msg.payload = (mid_1 + mid_2) / 2;
+                            } else {
+                                msg.payload = a_copy[Math.floor(a_copy.length / 2)];
+                            }
+                        }
                         if (node.action === "sd") {
                             tot = tot + n - pop;
                             tot2 = tot2 + (n*n) - (pop * pop);

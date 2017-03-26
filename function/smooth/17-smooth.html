@@ -6,6 +6,7 @@
             <option value="max">Return the maximum value seen</option>
             <option value="min">Return the minimum value seen</option>
             <option value="mean">Return the mean value</option>
+            <option value="median">Return the median value</option>
             <option value="sd">Return the standard deviation</option>
             <option value="low">Perform low pass filter</option>
             <option value="high">Perform high pass filter</option>
@@ -30,8 +31,8 @@
 </script>
 
 <script type="text/x-red" data-help-name="smooth">
-    <p>A simple node to provide various functions across several previous values, including max, min, mean, high and low pass filters.</p>
-    <p>Max, Min and Mean work over a specified number of previous values.</p>
+    <p>A simple node to provide various functions across several previous values, including max, min, mean, median, high and low pass filters.</p>
+    <p>Max, Min, Mean, and Median work over a specified number of previous values.</p>
     <p>The High and Low pass filters use a smoothing factor. The higher the number the more the smoothing. E.g. a value of 10 is
     similar to an &alpha; of 0.1. It is analagous to an RC time constant - but there is no time component to this as the
     time is based on events arriving.</p>
